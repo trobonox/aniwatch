@@ -16,21 +16,33 @@
         @keypress.enter="searchForAnime"
       >
       
-      <div class="nsfw-warning" v-if="result && result.data.Page.media[0].isAdult">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <div class="anime-wrapper">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
         </svg>
-        <p>You cannot view adult content on this website.</p>
+        
+        <div class="nsfw-warning" v-if="result && result.data.Page.media[0].isAdult">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon2 arrow-left" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p>You cannot view adult content on this website.</p>
         </div>
-      <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[0].isAdult }">        
-        <h1 v-if="result.data.Page.media[0].title.english" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
-        <h1 v-else>{{result.data.Page.media[0].title.romaji}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+        
+        <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[0].isAdult }">        
+          <h1 v-if="result.data.Page.media[0].title.english" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+          <h1 v-else>{{result.data.Page.media[0].title.romaji}} ({{ result.data.Page.media[0].seasonYear }})</h1>
 
-        <img class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.romaji + ' Cover'"/>
-        <p v-html="result.data.Page.media[0].description"></p>
+          <img class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.romaji + ' Cover'"/>
+          <p v-html="result.data.Page.media[0].description"></p>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
+        </svg>
+
       </div>
 
-      
     </div>
 
     <div class="footer">
@@ -195,7 +207,6 @@ h1 {
   align-content: center;
   align-self: center;
   align-items: center;
-  padding-top: 15px;
 
   padding-bottom: 2.5rem;
 }
@@ -221,7 +232,7 @@ h1 {
 }
 
 .anime-card {
-  background-color: #e6e6e9;
+  background-color: #e9e9e9;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
   border-radius: 16px;
 
@@ -258,6 +269,8 @@ h1 {
   align-items: center;
 
   color: rgba(0, 0, 0, 0.5);
+
+  z-index: 10;
 }
 
 .footer-text {
@@ -298,6 +311,28 @@ h1 {
 .icon2{
   width: 128px;
   height: auto;
+}
+
+.icon3 {
+  width: 20%;
+  height: auto;
+
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.anime-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-right {
+  padding-right: 25px;
+}
+
+.arrow-left {
+  padding-left: 25px
 }
 
 </style>
