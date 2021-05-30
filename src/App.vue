@@ -6,6 +6,8 @@
     </div>
 
     <div class="content">
+      <p>Get basic info about every Anime! (Provided by anilist.co)</p>
+      
       <input
         v-model="animeName"
         class="searchbar"
@@ -21,9 +23,11 @@
         <p>You cannot view adult content on this website.</p>
         </div>
       <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[0].isAdult }">        
-        <h1 v-if="result" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
-        <img v-if="result" class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.english + ' Cover'"/>
-        <p v-if="result" v-html="result.data.Page.media[0].description"></p>
+        <h1 v-if="result.data.Page.media[0].title.english" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+        <h1 v-else>{{result.data.Page.media[0].title.romaji}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+
+        <img class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.romaji + ' Cover'"/>
+        <p v-html="result.data.Page.media[0].description"></p>
       </div>
 
       
@@ -102,7 +106,7 @@ export default {
           variables: {
             search: this.animeName,
             page: 1,
-            perPage: 3
+            perPage: 8
           }
         })
       }).then(this.handleResponse)
@@ -189,7 +193,7 @@ h1 {
   align-content: center;
   align-self: center;
   align-items: center;
-  padding-top: 25px;
+  padding-top: 15px;
 
   padding-bottom: 2.5rem;
 }
@@ -215,7 +219,8 @@ h1 {
 }
 
 .anime-card {
-  background-color: #f0f0f3;
+  background-color: #e6e6e9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
   border-radius: 16px;
 
   display: flex;
