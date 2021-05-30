@@ -139,6 +139,8 @@ html {
 body {
   margin: 0;
   padding: 0;
+  background-color: #EDF1F5;
+  overflow-x: hidden;
 }
 
 h1 {
