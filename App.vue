@@ -23,9 +23,10 @@
       <div class="nsfw-text"></div>
     </div>
 
-    <footer>
-       <a class="footer-text" href="https://github.com/trobonox">© 2021 Trobonox</a>
-    </footer>
+    <div class="footer">
+      <a class="footer-text" href="https://github.com/trobonox">© 2021 Trobonox</a>
+    </div>
+    
   </div>
 </template>
 
@@ -225,7 +226,7 @@ h1 {
   padding: 20px 50px;
 }
 
-footer {
+.footer {
   position: absolute;
   bottom: 0;
   width: 100%;
