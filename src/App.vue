@@ -14,13 +14,19 @@
         @keypress.enter="searchForAnime"
       >
       
-      <div class="anime-card" v-if="result">
-        <h1 v-if="result">{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+      <div class="nsfw-warning" v-if="result && result.data.Page.media[0].isAdult">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <p>You cannot view adult content on this website.</p>
+        </div>
+      <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[0].isAdult }">        
+        <h1 v-if="result" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
         <img v-if="result" class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.english + ' Cover'"/>
         <p v-if="result" v-html="result.data.Page.media[0].description"></p>
       </div>
 
-      <div class="nsfw-text"></div>
+      
     </div>
 
     <div class="footer">
@@ -224,6 +230,8 @@ h1 {
   margin-right: 500px;
 
   padding: 20px 50px;
+
+  z-index: 0;
 }
 
 .footer {
@@ -246,6 +254,41 @@ h1 {
 .footer-text {
   text-decoration: none;
   color: inherit;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.blur-overlay {
+  filter: blur(20px);
+  pointer-events:none;
+
+  /* Disable selection of anything */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.nsfw-warning {
+  position: absolute;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+  align-items: center;
+
+  font-size: 20px;
+}
+
+.icon2{
+  width: 128px;
+  height: auto;
 }
 
 </style>
