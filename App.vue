@@ -19,7 +19,13 @@
         <img v-if="result" class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.english + ' Cover'"/>
         <p v-if="result" v-html="result.data.Page.media[0].description"></p>
       </div>
+
+      <div class="nsfw-text"></div>
     </div>
+
+    <footer>
+       <a class="footer-text" href="https://github.com/trobonox">© 2021 Trobonox</a>
+    </footer>
   </div>
 </template>
 
@@ -133,8 +139,8 @@ h1 {
   margin-top: 0;
 }
 
-#app {
-  background-size: cover;
+.app {
+  position: relative;
   min-height: 100vh;
 }
 
@@ -175,6 +181,8 @@ h1 {
   align-self: center;
   align-items: center;
   padding-top: 25px;
+
+  padding-bottom: 2.5rem;
 }
 
 .searchbar {
@@ -215,6 +223,28 @@ h1 {
   margin-right: 500px;
 
   padding: 20px 50px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.5rem; 
+
+  display: flex;
+  flex-direction: row;
+  
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  align-items: center;
+
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.footer-text {
+  text-decoration: none;
+  color: inherit;
 }
 
 </style>
