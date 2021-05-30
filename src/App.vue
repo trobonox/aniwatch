@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="header">
+    <div class="header" onClick="window.location.reload();">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
       <div class="header-text">AniWatch</div>
     </div>
@@ -171,6 +171,8 @@ h1 {
   font-family: inherit;
 
   box-shadow: 0px 8px 25px 4px rgba(0, 0, 0, 0.2);
+
+  cursor: pointer;
 }
 
 .header-text {
