@@ -16,32 +16,37 @@
         @keypress.enter="searchForAnime"
       >
       
+
+
+      <div class="nsfw-warning" v-if="result && result.data.Page.media[resultNumber].hasOwnProperty('isAdult')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon2 arrow-left" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="result && result.data.Page.media[resultNumber].isAdult">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <p v-if="result && result.data.Page.media[resultNumber].isAdult">You cannot view adult content on this website.</p>
+      </div>
+
+      
+      
       <div class="anime-wrapper">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
         </svg>
         
-        <div class="nsfw-warning" v-if="result && result.data.Page.media[0].isAdult">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon2 arrow-left" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <p>You cannot view adult content on this website.</p>
-        </div>
-        
-        <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[0].isAdult }">        
-          <h1 v-if="result.data.Page.media[0].title.english" >{{result.data.Page.media[0].title.english}} ({{ result.data.Page.media[0].seasonYear }})</h1>
-          <h1 v-else>{{result.data.Page.media[0].title.romaji}} ({{ result.data.Page.media[0].seasonYear }})</h1>
+        <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[resultNumber].isAdult }">        
+          <h1 v-if="result.data.Page.media[resultNumber].title.english" >{{result.data.Page.media[resultNumber].title.english}} ({{ result.data.Page.media[resultNumber].seasonYear }})</h1>
+          <h1 v-else>{{result.data.Page.media[resultNumber].title.romaji}} ({{ result.data.Page.media[resultNumber].seasonYear }})</h1>
 
-          <img class="cover" :src="result.data.Page.media[0].coverImage.large" :alt="result.data.Page.media[0].title.romaji + ' Cover'"/>
-          <p v-html="result.data.Page.media[0].description"></p>
+          <img class="cover" :src="result.data.Page.media[resultNumber].coverImage.large" :alt="result.data.Page.media[resultNumber].title.romaji + ' Cover'"/>
+          <p v-html="result.data.Page.media[resultNumber].description"></p>
         </div>
 
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
         </svg>
 
       </div>
+
 
     </div>
 
@@ -59,6 +64,7 @@ export default {
   data() {
     return {
       animeName: '',
+      resultNumber: 0,
       url : 'https://graphql.anilist.co',
       query : `
               query ($id: Int, $page: Int, $perPage: Int, $search: String) {
@@ -108,7 +114,7 @@ export default {
   
   methods: {
     searchForAnime() {
-      
+      this.resultNumber = 0;
       
       fetch(this.url, {
         method: 'POST',
@@ -136,6 +142,25 @@ export default {
     handleError(error) {
       alert('Error, check console');
       console.error(error);
+    },
+
+
+    pageArrowRight() {
+      if(this.resultNumber == this.result.data.Page.media.length - 1) {
+        this.resultNumber = 0;
+        return;
+      }
+
+      this.resultNumber++;
+    },
+
+    pageArrowLeft() {
+      if(this.resultNumber == 0) {
+        this.resultNumber = this.result.data.Page.media.length - 1;
+        return;
+      }
+
+      this.resultNumber--;
     }
   }
 
@@ -246,8 +271,8 @@ h1 {
   text-align: center;
 
   margin-top: 20px;
-  margin-left: 500px;
-  margin-right: 500px;
+  margin-left: 50px;
+  margin-right: 50px;
 
   padding: 20px 50px;
 
@@ -314,7 +339,8 @@ h1 {
 }
 
 .icon3 {
-  width: 20%;
+  max-width: 100px;
+  min-width: 100px;
   height: auto;
 
   color: rgba(0, 0, 0, 0.75);
@@ -325,6 +351,8 @@ h1 {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  margin: 0px 400px;
 }
 
 .arrow-right {
@@ -333,6 +361,13 @@ h1 {
 
 .arrow-left {
   padding-left: 25px
+}
+
+.arrow-left:hover,
+.arrow-right:hover {
+  color: rgba(142, 83, 182, 0.75);
+
+  cursor: pointer;
 }
 
 </style>
