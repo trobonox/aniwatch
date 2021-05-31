@@ -1,8 +1,18 @@
 <template>
-  <div class="app">
-    <div class="header" onClick="window.location.reload();">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-      <div class="header-text">AniWatch</div>
+  <div class="app" :class="{ 'dark' : darkMode }">
+    <div class="header">
+      <div class="branding" onClick="window.location.reload();">
+        <svg xmlns="http://www.w3.org/2000/svg" class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        <div class="header-text">AniWatch</div>
+      </div> 
+      
+      <svg v-if="darkMode" xmlns="http://www.w3.org/2000/svg" class="header-icon darkmode-toggle" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="toggleDarkMode()">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" class="header-icon darkmode-toggle" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="toggleDarkMode()">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>    
+
     </div>
 
     <div class="content">
@@ -19,7 +29,7 @@
 
 
       <div class="nsfw-warning" v-if="result && result.data.Page.media[resultNumber].hasOwnProperty('isAdult')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon2 arrow-left" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="result && result.data.Page.media[resultNumber].isAdult">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-128" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="result && result.data.Page.media[resultNumber].isAdult">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
         <p v-if="result && result.data.Page.media[resultNumber].isAdult">You cannot view adult content on this website.</p>
@@ -29,7 +39,7 @@
       
       <div class="anime-wrapper">
 
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
         </svg>
         
@@ -41,7 +51,7 @@
           <p v-html="result.data.Page.media[resultNumber].description"></p>
         </div>
 
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon3 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
         </svg>
 
@@ -63,6 +73,7 @@ export default {
   name: 'AniWatch',
   data() {
     return {
+      darkMode: true,
       animeName: '',
       resultNumber: 0,
       url : 'https://graphql.anilist.co',
@@ -161,6 +172,10 @@ export default {
       }
 
       this.resultNumber--;
+    },
+
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
     }
   }
 
@@ -171,17 +186,64 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400&display=swap');
 
-html {
-  font-family: 'DM Sans', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.app {
+  --accent: rgb(93, 82, 190);
+  --accent-dim: rgba(93, 82, 190, 0.75);
+  
+  --header: white;
+  --footer: rgba(0, 0, 0, 0.5);
+
+  --background: rgb(237, 241, 245);
+  --background-searchbar: white;
+  --background-header: rgb(93, 82, 190);
+  --card-background: rgb(233, 233, 233);
+
+  --icon-primary: black;
+  --icon-dim: rgba(0, 0, 0, 0.75);
+  --icon-hover: rgba(255, 255, 255, 0.664);
+
+  --text-primary: black;
+  --text-secondary: rgba(0, 0, 0, 0.6);
+
+  --shadow-primary: rgba(0, 0, 0, 0.25);
+  --shadow-dim: rgba(0, 0, 0, 0.2);
+
+  position: relative;
+  min-height: 100vh;
+
+  background-color: var(--background);
+}
+
+.app.dark {
+  --accent: rgb(121, 107, 245);
+  --accent-dim: rgb(163, 153, 255);
+
+  --header: rgb(150, 139, 250);
+  --footer: rgba(255, 255, 255, 0.5);
+
+  --icon-primary: rgb(255, 255, 255);
+  --icon-dim: hsla(0, 0%, 100%, 0.5);
+  --icon-hover: rgb(118, 106, 223);
+  
+  --background: rgb(18, 18, 18);
+  --background-searchbar: rgb(38, 38, 38);
+  --background-header: hsl(0, 0%, 18%);
+  --card-background: rgb(43, 43, 43);
+
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+
+  --shadow-dim: rgba(0, 0, 0, 0.1);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #EDF1F5;
   overflow-x: hidden;
+  
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1 {
@@ -189,45 +251,78 @@ h1 {
   margin-top: 0;
 }
 
-.app {
-  position: relative;
-  min-height: 100vh;
+h1, p{
+  color: var(--text-primary);
 }
 
 .header{
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  background: #5d52be;
+  justify-content: space-between;
+
   margin: 0;
-  padding: 5px 5px;
+  padding: 5px 20px;
   position: sticky;
   top: 0;
   
-  font-weight: 400;
   font-family: inherit;
 
-  box-shadow: 0px 8px 25px 4px rgba(0, 0, 0, 0.2);
+  background: var(--background-header);
+  box-shadow: 0px 8px 25px 4px var(--shadow-dim);
+
+  z-index: 10;
+}
+
+.branding {
+  display: flex;
+  flex-direction: row;
 
   cursor: pointer;
 }
 
 .header-text {
   text-align: center;
-  color: white;
   font-size: 1.5em;
+
+  color: var(--header);
 }
 
-.icon {
+.header-icon {
   width: 32px;
-  height: 32px;
-  color: white;
+  height: auto;
   padding-right: 2px;
+
+  color: var(--header);
+}
+
+.header-icon:hover {
+  color: var(--icon-hover);
+}
+
+.icon-128 {
+  width: 128px;
+  height: auto;
+
+  color: var(--icon-primary);
+}
+
+.icon-100 {
+  max-width: 100px;
+  min-width: 100px;
+  height: auto;
+
+  color: var(--icon-dim);
+}
+
+.darkmode-toggle {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .content {
   display: flex;
   flex-direction: column;
+  
   justify-content: center;
   align-content: center;
   align-self: center;
@@ -239,7 +334,7 @@ h1 {
 .searchbar {
   padding: 10px 20px;
   width: 500px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 8px var(--shadow-primary);
   
   border: none;
   border-radius: 4px;
@@ -249,16 +344,19 @@ h1 {
   font-size: 15px;
 
   margin-bottom: 10px;
+
+  color: var(--text-secondary);
+  background-color: var(--background-searchbar);
 }
 
 .cover {
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 8px var(--shadow-primary);
   border-radius: 5px;
 }
 
 .anime-card {
-  background-color: #e9e9e9;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  background-color: var(--card-background);
+  box-shadow: 0px 4px 8px var(--shadow-primary);
   border-radius: 16px;
 
   display: flex;
@@ -293,9 +391,7 @@ h1 {
   text-align: center;
   align-items: center;
 
-  color: rgba(0, 0, 0, 0.5);
-
-  z-index: 10;
+  color: var(--footer);
 }
 
 .footer-text {
@@ -333,19 +429,6 @@ h1 {
   font-size: 20px;
 }
 
-.icon2{
-  width: 128px;
-  height: auto;
-}
-
-.icon3 {
-  max-width: 100px;
-  min-width: 100px;
-  height: auto;
-
-  color: rgba(0, 0, 0, 0.75);
-}
-
 .anime-wrapper {
   display: flex;
   flex-direction: row;
@@ -365,7 +448,7 @@ h1 {
 
 .arrow-left:hover,
 .arrow-right:hover {
-  color: rgba(142, 83, 182, 0.75);
+  color: var(--accent-dim);
 
   cursor: pointer;
 }
