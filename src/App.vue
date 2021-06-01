@@ -16,7 +16,7 @@
     </div>
 
     <div class="content">
-      <p>Get basic info about every Anime! (Provided by anilist.co)</p>
+      <p class="info-text">Get basic info about every Anime! (Provided by anilist.co)</p>
       
       <input
         v-model="animeName"
@@ -27,7 +27,6 @@
       >
       
 
-
       <div class="nsfw-warning" v-if="result && result.data.Page.media[resultNumber].hasOwnProperty('isAdult')">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon-128" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="result && result.data.Page.media[resultNumber].isAdult">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -36,7 +35,6 @@
       </div>
 
       
-      
       <div class="anime-wrapper">
 
         <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()">
@@ -44,10 +42,24 @@
         </svg>
         
         <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[resultNumber].isAdult }">        
-          <h1 v-if="result.data.Page.media[resultNumber].title.english" >{{result.data.Page.media[resultNumber].title.english}} ({{ result.data.Page.media[resultNumber].seasonYear }})</h1>
-          <h1 v-else>{{result.data.Page.media[resultNumber].title.romaji}} ({{ result.data.Page.media[resultNumber].seasonYear }})</h1>
+          <h1 v-if="result.data.Page.media[resultNumber].title.english"> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.english}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
+          <h1 v-else> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.romaji}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
 
           <img class="cover" :src="result.data.Page.media[resultNumber].coverImage.large" :alt="result.data.Page.media[resultNumber].title.romaji + ' Cover'"/>
+
+          <div class="badges-wrapper">
+            <div class="badges">
+              <div class="info-badge">{{ result.data.Page.media[resultNumber].format }}</div>
+              <div class="info-badge" v-if="result.data.Page.media[resultNumber].status">{{ toTitleCase(result.data.Page.media[resultNumber].status).replace(/_/g, " ") }}</div>
+              <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes > 1">{{ result.data.Page.media[resultNumber].episodes }} Episodes</div>
+              <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes == 1" >{{ result.data.Page.media[resultNumber].episodes }} Episode</div>
+              <div class="info-badge" v-if="result.data.Page.media[resultNumber].season && result.data.Page.media[resultNumber].seasonYear">{{ toTitleCase(result.data.Page.media[resultNumber].season) }} {{ result.data.Page.media[resultNumber].seasonYear }}</div>
+            </div>
+            <div class="badges">
+              <div class="genre-badge" v-for="genre in result.data.Page.media[resultNumber].genres" :key="genre.index">{{ genre }}</div>
+            </div>
+          </div>
+        
           <p v-html="result.data.Page.media[resultNumber].description"></p>
         </div>
 
@@ -56,8 +68,6 @@
         </svg>
 
       </div>
-
-
     </div>
 
     <div class="footer">
@@ -176,6 +186,15 @@ export default {
 
     toggleDarkMode() {
       this.darkMode = !this.darkMode;
+    },
+
+    toTitleCase(str) {
+      return str.replace(
+        /\w\S*/g,
+        function(txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+      );
     }
   }
 
@@ -189,6 +208,7 @@ export default {
 .app {
   --accent: rgb(93, 82, 190);
   --accent-dim: rgba(93, 82, 190, 0.75);
+  --accent-secondary: rgb(107, 116, 245);
   
   --header: white;
   --footer: rgba(0, 0, 0, 0.5);
@@ -204,6 +224,7 @@ export default {
 
   --text-primary: black;
   --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-badge: white;
 
   --shadow-primary: rgba(0, 0, 0, 0.25);
   --shadow-dim: rgba(0, 0, 0, 0.2);
@@ -217,6 +238,7 @@ export default {
 .app.dark {
   --accent: rgb(121, 107, 245);
   --accent-dim: rgb(163, 153, 255);
+  --accent-secondary: rgb(107, 116, 245);
 
   --header: rgb(150, 139, 250);
   --footer: rgba(255, 255, 255, 0.5);
@@ -228,10 +250,11 @@ export default {
   --background: rgb(18, 18, 18);
   --background-searchbar: rgb(38, 38, 38);
   --background-header: hsl(0, 0%, 18%);
-  --card-background: rgb(43, 43, 43);
+  --background-card: rgb(43, 43, 43);
 
   --text-primary: rgba(255, 255, 255, 0.87);
   --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-badge: var(--text-primary);
 
   --shadow-dim: rgba(0, 0, 0, 0.1);
 }
@@ -246,13 +269,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1 {
-  margin-bottom: 15px;
-  margin-top: 0;
-}
 
 h1, p{
+  margin-top: 0;
+  margin-bottom: 15px;
+
   color: var(--text-primary);
+}
+
+a {
+  text-decoration: none;
+
+  color: var(--text-primary);
+}
+
+a:hover {
+  color: var(--accent-dim);
 }
 
 .header{
@@ -317,6 +349,8 @@ h1, p{
 .darkmode-toggle {
   display: flex;
   justify-content: flex-end;
+
+  cursor: pointer;
 }
 
 .content {
@@ -329,6 +363,10 @@ h1, p{
   align-items: center;
 
   padding-bottom: 2.5rem;
+}
+
+.info-text {
+  margin-top: 15px;
 }
 
 .searchbar {
@@ -355,7 +393,7 @@ h1, p{
 }
 
 .anime-card {
-  background-color: var(--card-background);
+  background-color: var(--background-card);
   box-shadow: 0px 4px 8px var(--shadow-primary);
   border-radius: 16px;
 
@@ -375,6 +413,42 @@ h1, p{
   padding: 20px 50px;
 
   z-index: 0;
+}
+
+.genre-badge {
+  padding: 8px 8px;
+  margin: 5px 5px;
+
+  border-radius: 5px;
+
+  color: var(--text-badge);
+  background: var(--accent);
+}
+
+.info-badge {
+  padding: 8px 8px;
+  margin: 5px 5px;
+
+  border-radius: 5px;
+
+  color: var(--text-badge);
+  background: var(--accent-secondary);
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  
+  justify-content: center;
+  align-content: center;
+  align-self: center;
+  align-items: center;
+
+  margin: 5px 0;
+}
+
+.badges-wrapper {
+  margin: 10px 0;
 }
 
 .footer {
