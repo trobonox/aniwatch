@@ -45,11 +45,40 @@
           <h1 v-if="result.data.Page.media[resultNumber].title.english"> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.english}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
           <h1 v-else> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.romaji}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
 
+          <p v-if="result.data.Page.media[resultNumber].status == 'RELEASING'">Episode {{ result.data.Page.media[resultNumber].nextAiringEpisode.episode }} airs in {{ daysUntilEpisodeAiring }} days</p>
+
+          <div class="rating">
+            <svg v-if="result.data.Page.media[resultNumber].averageScore <= 100 && result.data.Page.media[resultNumber].averageScore >= 70" xmlns="http://www.w3.org/2000/svg" class="icon-green" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <circle cx="12" cy="12" r="9" />
+              <line x1="9" y1="10" x2="9.01" y2="10" />
+              <line x1="15" y1="10" x2="15.01" y2="10" />
+              <path d="M9.5 15a3.5 3.5 0 0 0 5 0" />
+            </svg>
+            <svg v-if="result.data.Page.media[resultNumber].averageScore < 70 && result.data.Page.media[resultNumber].averageScore >= 50" xmlns="http://www.w3.org/2000/svg" class="icon-orange" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <circle cx="12" cy="12" r="9" />
+              <line x1="9" y1="10" x2="9.01" y2="10" />
+              <line x1="15" y1="10" x2="15.01" y2="10" />
+            </svg>
+            <svg v-if="result.data.Page.media[resultNumber].averageScore <= 50 " xmlns="http://www.w3.org/2000/svg" class="icon-red" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <circle cx="12" cy="12" r="9" />
+              <line x1="9" y1="10" x2="9.01" y2="10" />
+              <line x1="15" y1="10" x2="15.01" y2="10" />
+              <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
+            </svg>
+            <h2> {{ result.data.Page.media[resultNumber].averageScore }}% </h2>
+          </div>
+
+          
+          
+
           <img class="cover" :src="result.data.Page.media[resultNumber].coverImage.large" :alt="result.data.Page.media[resultNumber].title.romaji + ' Cover'"/>
 
           <div class="badges-wrapper">
             <div class="badges">
-              <div class="info-badge">{{ result.data.Page.media[resultNumber].format }}</div>
+              <div class="info-badge">{{ titleCaseAnimeType }}</div>
               <div class="info-badge" v-if="result.data.Page.media[resultNumber].status">{{ toTitleCase(result.data.Page.media[resultNumber].status).replace(/_/g, " ") }}</div>
               <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes > 1">{{ result.data.Page.media[resultNumber].episodes }} Episodes</div>
               <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes == 1" >{{ result.data.Page.media[resultNumber].episodes }} Episode</div>
@@ -114,10 +143,9 @@ export default {
                         seasonYear
                         siteUrl
                         averageScore
-                        studios (sort: NAME){
-                            nodes{
-                                name
-                            }
+                        nextAiringEpisode {
+                          timeUntilAiring
+                          episode
                         }
                         coverImage{
                             medium
@@ -196,6 +224,24 @@ export default {
         }
       );
     }
+  },
+
+  computed: {
+    titleCaseAnimeType() {
+      var animeType = this.result.data.Page.media[this.resultNumber].format;
+
+      if (animeType == "TV" || animeType == "OVA" || animeType == "ONA") {
+        return animeType;
+      } else {
+        return this.toTitleCase(animeType);
+      }
+    },
+
+    daysUntilEpisodeAiring() {
+      var secondsUntilAiring = this.result.data.Page.media[this.resultNumber].nextAiringEpisode.timeUntilAiring;
+
+      return Math.floor(secondsUntilAiring / 86400)
+    }
   }
 
 }
@@ -222,6 +268,10 @@ export default {
   --icon-dim: rgba(0, 0, 0, 0.75);
   --icon-hover: rgba(255, 255, 255, 0.664);
 
+  --icon-green: rgb(33, 175, 33);
+  --icon-orange: rgb(206, 138, 50);
+  --icon-red: rgb(168, 44, 44);
+
   --text-primary: black;
   --text-secondary: rgba(0, 0, 0, 0.6);
   --text-badge: white;
@@ -246,6 +296,10 @@ export default {
   --icon-primary: rgb(255, 255, 255);
   --icon-dim: hsla(0, 0%, 100%, 0.5);
   --icon-hover: rgb(118, 106, 223);
+
+  --icon-green: rgb(108, 255, 108);
+  --icon-orange: rgb(255, 191, 108);
+  --icon-red: rgb(255, 108, 108);
   
   --background: rgb(18, 18, 18);
   --background-searchbar: rgb(38, 38, 38);
@@ -272,7 +326,14 @@ body {
 
 h1, p{
   margin-top: 0;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
+
+  color: var(--text-primary);
+}
+
+h2 {
+  margin: 0 7px;
+  font-size: 15px;
 
   color: var(--text-primary);
 }
@@ -346,6 +407,18 @@ a:hover {
   color: var(--icon-dim);
 }
 
+.icon-green {
+  color: var(--icon-green);
+}
+
+.icon-orange {
+  color: var(--icon-orange);
+}
+
+.icon-red {
+  color: var(--icon-red);
+}
+
 .darkmode-toggle {
   display: flex;
   justify-content: flex-end;
@@ -413,6 +486,18 @@ a:hover {
   padding: 20px 50px;
 
   z-index: 0;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row;
+  
+  justify-content: center;
+  align-content: center;
+  align-self: center;
+  align-items: center;
+
+  margin-bottom: 10px;
 }
 
 .genre-badge {
