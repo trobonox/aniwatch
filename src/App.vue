@@ -27,72 +27,23 @@
       >
       
 
-      <div class="nsfw-warning" v-if="result && result.data.Page.media[resultNumber].hasOwnProperty('isAdult')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-128" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="result && result.data.Page.media[resultNumber].isAdult">
+      <div class="nsfw-warning" v-if="cardDisplayed && isAdultContent">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-128" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <p v-if="result && result.data.Page.media[resultNumber].isAdult">You cannot view adult content on this website.</p>
+        <p>You cannot view adult content on this website.</p>
       </div>
 
       
       <div class="anime-wrapper">
 
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-left" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-left"  fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()" v-if="cardDisplayed">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
         </svg>
         
-        <div class="anime-card" v-if="result" :class="{ 'blur-overlay' : result.data.Page.media[resultNumber].isAdult }">        
-          <h1 v-if="result.data.Page.media[resultNumber].title.english"> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.english}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
-          <h1 v-else> <a :href="result.data.Page.media[resultNumber].siteUrl"> {{result.data.Page.media[resultNumber].title.romaji}} ({{ result.data.Page.media[resultNumber].seasonYear }}) </a> </h1>
+        <AnimeCard :searchQuery="animeName" ref="card" @result="onValidResult()"></AnimeCard>
 
-          <p v-if="result.data.Page.media[resultNumber].status == 'RELEASING'">Episode {{ result.data.Page.media[resultNumber].nextAiringEpisode.episode }} airs in {{ daysUntilEpisodeAiring }} days</p>
-
-          <div class="rating">
-            <svg v-if="result.data.Page.media[resultNumber].averageScore <= 100 && result.data.Page.media[resultNumber].averageScore >= 70" xmlns="http://www.w3.org/2000/svg" class="icon-green" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <circle cx="12" cy="12" r="9" />
-              <line x1="9" y1="10" x2="9.01" y2="10" />
-              <line x1="15" y1="10" x2="15.01" y2="10" />
-              <path d="M9.5 15a3.5 3.5 0 0 0 5 0" />
-            </svg>
-            <svg v-if="result.data.Page.media[resultNumber].averageScore < 70 && result.data.Page.media[resultNumber].averageScore >= 50" xmlns="http://www.w3.org/2000/svg" class="icon-orange" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <circle cx="12" cy="12" r="9" />
-              <line x1="9" y1="10" x2="9.01" y2="10" />
-              <line x1="15" y1="10" x2="15.01" y2="10" />
-            </svg>
-            <svg v-if="result.data.Page.media[resultNumber].averageScore <= 50 " xmlns="http://www.w3.org/2000/svg" class="icon-red" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <circle cx="12" cy="12" r="9" />
-              <line x1="9" y1="10" x2="9.01" y2="10" />
-              <line x1="15" y1="10" x2="15.01" y2="10" />
-              <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
-            </svg>
-            <h2> {{ result.data.Page.media[resultNumber].averageScore }}% </h2>
-          </div>
-
-          
-          
-
-          <img class="cover" :src="result.data.Page.media[resultNumber].coverImage.large" :alt="result.data.Page.media[resultNumber].title.romaji + ' Cover'"/>
-
-          <div class="badges-wrapper">
-            <div class="badges">
-              <div class="info-badge">{{ titleCaseAnimeType }}</div>
-              <div class="info-badge" v-if="result.data.Page.media[resultNumber].status">{{ toTitleCase(result.data.Page.media[resultNumber].status).replace(/_/g, " ") }}</div>
-              <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes > 1">{{ result.data.Page.media[resultNumber].episodes }} Episodes</div>
-              <div class="info-badge" v-if="result.data.Page.media[resultNumber].episodes && result.data.Page.media[resultNumber].episodes == 1" >{{ result.data.Page.media[resultNumber].episodes }} Episode</div>
-              <div class="info-badge" v-if="result.data.Page.media[resultNumber].season && result.data.Page.media[resultNumber].seasonYear">{{ toTitleCase(result.data.Page.media[resultNumber].season) }} {{ result.data.Page.media[resultNumber].seasonYear }}</div>
-            </div>
-            <div class="badges">
-              <div class="genre-badge" v-for="genre in result.data.Page.media[resultNumber].genres" :key="genre.index">{{ genre }}</div>
-            </div>
-          </div>
-        
-          <p v-html="result.data.Page.media[resultNumber].description"></p>
-        </div>
-
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-right" v-if="result" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-right"  fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()" v-if="cardDisplayed">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
         </svg>
 
@@ -107,142 +58,79 @@
 </template>
 
 <script>
+import AnimeCard from "@/components/AnimeCard.vue";
 
 export default {
   name: 'AniWatch',
+  components: {
+    AnimeCard
+  },
   data() {
     return {
       darkMode: true,
       animeName: '',
-      resultNumber: 0,
-      url : 'https://graphql.anilist.co',
-      query : `
-              query ($id: Int, $page: Int, $perPage: Int, $search: String) {
-                Page (page: $page, perPage: $perPage) {
-                    pageInfo {
-                        total
-                        currentPage
-                        lastPage
-                        hasNextPage
-                        perPage
-                    }
-                    media (id: $id, search: $search, type: ANIME) {
-                        id
-                        format
-                        title {
-                            native
-                            romaji
-                            english
-                        }
-                        isAdult
-                        description               
-                        status
-                        episodes
-                        genres
-                        season
-                        seasonYear
-                        siteUrl
-                        averageScore
-                        nextAiringEpisode {
-                          timeUntilAiring
-                          episode
-                        }
-                        coverImage{
-                            medium
-                            large
-                            extraLarge
-                            color
-                        }
-                    }
-                }
-            }
-            `,
-      result: ''
+      cardDisplayed: false,
+      adultContent: false
     }
   },
   
   methods: {
     searchForAnime() {
-      this.resultNumber = 0;
-      
-      fetch(this.url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json',},
-        body: JSON.stringify({
-          query: this.query,
-          variables: {
-            search: this.animeName,
-            page: 1,
-            perPage: 8
-          }
-        })
-      }).then(this.handleResponse)
-        .then(this.handleData)
-        .catch(this.handleError);
+      this.$refs.card.searchForAnime();
     },
-    handleResponse(response) {
-      return response.json().then(function (json) {
-        return response.ok ? json : Promise.reject(json);
-      });
-    },
-    handleData(data) {
-      this.result = data;
-    },
-    handleError(error) {
-      alert('Error, check console');
-      console.error(error);
-    },
-
 
     pageArrowRight() {
-      if(this.resultNumber == this.result.data.Page.media.length - 1) {
-        this.resultNumber = 0;
-        return;
-      }
 
-      this.resultNumber++;
+      if(this.$refs.card) {
+        
+        if(this.$refs.card.resultNumber == this.$refs.card.result.data.Page.media.length - 1) {
+          this.$refs.card.resultNumber = 0;
+          return;
+        }
+
+        this.$refs.card.resultNumber++;
+      }
+      
     },
 
     pageArrowLeft() {
-      if(this.resultNumber == 0) {
-        this.resultNumber = this.result.data.Page.media.length - 1;
-        return;
+
+      if(this.$refs.card) {
+        
+        if(this.$refs.card.resultNumber == 0) {
+          this.$refs.card.resultNumber = this.$refs.card.result.data.Page.media.length - 1;
+          return;
+        }
+
+        this.$refs.card.resultNumber--;
       }
 
-      this.resultNumber--;
     },
 
     toggleDarkMode() {
       this.darkMode = !this.darkMode;
     },
 
-    toTitleCase(str) {
-      return str.replace(
-        /\w\S*/g,
-        function(txt) {
-          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        }
-      );
-    }
+    onValidResult() {
+      this.cardDisplayed = true;
+    },
+
+  },
+
+  mounted() {
+    this.cardDisplayed = false;
   },
 
   computed: {
-    titleCaseAnimeType() {
-      var animeType = this.result.data.Page.media[this.resultNumber].format;
-
-      if (animeType == "TV" || animeType == "OVA" || animeType == "ONA") {
-        return animeType;
-      } else {
-        return this.toTitleCase(animeType);
+    isAdultContent() {
+      if(this.$refs.card.result.data.Page.media[this.$refs.card.resultNumber].isAdult){
+        return true;
       }
-    },
 
-    daysUntilEpisodeAiring() {
-      var secondsUntilAiring = this.result.data.Page.media[this.resultNumber].nextAiringEpisode.timeUntilAiring;
-
-      return Math.floor(secondsUntilAiring / 86400)
+      return false;
     }
   }
+
 
 }
 
@@ -460,81 +348,6 @@ a:hover {
   background-color: var(--background-searchbar);
 }
 
-.cover {
-  box-shadow: 0px 4px 8px var(--shadow-primary);
-  border-radius: 5px;
-}
-
-.anime-card {
-  background-color: var(--background-card);
-  box-shadow: 0px 4px 8px var(--shadow-primary);
-  border-radius: 16px;
-
-  display: flex;
-  flex-direction: column;
-  
-  justify-content: center;
-  align-content: center;
-  align-self: center;
-  align-items: center;
-  text-align: center;
-
-  margin-top: 20px;
-  margin-left: 50px;
-  margin-right: 50px;
-
-  padding: 20px 50px;
-
-  z-index: 0;
-}
-
-.rating {
-  display: flex;
-  flex-direction: row;
-  
-  justify-content: center;
-  align-content: center;
-  align-self: center;
-  align-items: center;
-
-  margin-bottom: 10px;
-}
-
-.genre-badge {
-  padding: 8px 8px;
-  margin: 5px 5px;
-
-  border-radius: 5px;
-
-  color: var(--text-badge);
-  background: var(--accent);
-}
-
-.info-badge {
-  padding: 8px 8px;
-  margin: 5px 5px;
-
-  border-radius: 5px;
-
-  color: var(--text-badge);
-  background: var(--accent-secondary);
-}
-
-.badges {
-  display: flex;
-  flex-direction: row;
-  
-  justify-content: center;
-  align-content: center;
-  align-self: center;
-  align-items: center;
-
-  margin: 5px 0;
-}
-
-.badges-wrapper {
-  margin: 10px 0;
-}
 
 .footer {
   position: absolute;
