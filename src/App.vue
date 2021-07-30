@@ -78,7 +78,7 @@ export default {
 
   background-color: var(--background);
 
-  transition: background-color 0.3s ease-in-out;
+  transition: background-color 0.4s cubic-bezier(.42,0,.58,1);
 }
 
 .app.dark {
