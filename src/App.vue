@@ -1,10 +1,10 @@
 <template>
   <div class="app" :class="{ 'dark' : darkMode }">
     <div class="header">
-      <div class="branding" onClick="window.location.reload();">
+      <router-link to="/" class="branding">
         <svg xmlns="http://www.w3.org/2000/svg" class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         <div class="header-text">AniWatch</div>
-      </div> 
+      </router-link> 
       
       <svg v-if="darkMode" xmlns="http://www.w3.org/2000/svg" class="header-icon darkmode-toggle" fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="toggleDarkMode()">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -15,40 +15,7 @@
 
     </div>
 
-    <div class="content">
-      <p class="info-text">Get basic info about every Anime! (Provided by anilist.co)</p>
-      
-      <input
-        v-model="animeName"
-        class="searchbar"
-        type="text"
-        placeholder="Search for Anime..."
-        @keypress.enter="searchForAnime"
-      >
-      
-
-      <div class="nsfw-warning" v-if="cardDisplayed && isAdultContent">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-128" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <p>You cannot view adult content on this website.</p>
-      </div>
-
-      
-      <div class="anime-wrapper">
-
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-left"  fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowLeft()" v-if="cardDisplayed">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
-        </svg>
-        
-        <AnimeCard :searchQuery="animeName" ref="card" @result="onValidResult()"></AnimeCard>
-
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon-100 arrow-right"  fill="none" viewBox="0 0 24 24" stroke="currentColor" @click="pageArrowRight()" v-if="cardDisplayed">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
-        </svg>
-
-      </div>
-    </div>
+    <router-view></router-view>
 
     <div class="footer">
       <a class="footer-text" href="https://github.com/trobonox">© 2021 Trobonox</a>
@@ -58,80 +25,19 @@
 </template>
 
 <script>
-import AnimeCard from "@/components/AnimeCard.vue";
 
 export default {
   name: 'AniWatch',
-  components: {
-    AnimeCard
-  },
   data() {
     return {
-      darkMode: true,
-      animeName: '',
-      cardDisplayed: false,
-      adultContent: false
+      darkMode: true
     }
   },
-  
-  methods: {
-    searchForAnime() {
-      this.$refs.card.searchForAnime();
-    },
-
-    pageArrowRight() {
-
-      if(this.$refs.card) {
-        
-        if(this.$refs.card.resultNumber == this.$refs.card.result.data.Page.media.length - 1) {
-          this.$refs.card.resultNumber = 0;
-          return;
-        }
-
-        this.$refs.card.resultNumber++;
-      }
-      
-    },
-
-    pageArrowLeft() {
-
-      if(this.$refs.card) {
-        
-        if(this.$refs.card.resultNumber == 0) {
-          this.$refs.card.resultNumber = this.$refs.card.result.data.Page.media.length - 1;
-          return;
-        }
-
-        this.$refs.card.resultNumber--;
-      }
-
-    },
-
+  methods: {  
     toggleDarkMode() {
       this.darkMode = !this.darkMode;
-    },
-
-    onValidResult() {
-      this.cardDisplayed = true;
-    },
-
-  },
-
-  mounted() {
-    this.cardDisplayed = false;
-  },
-
-  computed: {
-    isAdultContent() {
-      if(this.$refs.card.result.data.Page.media[this.$refs.card.resultNumber].isAdult){
-        return true;
-      }
-
-      return false;
     }
   }
-
-
 }
 
 </script>
@@ -147,10 +53,10 @@ export default {
   --header: white;
   --footer: rgba(0, 0, 0, 0.5);
 
-  --background: rgb(237, 241, 245);
-  --background-searchbar: white;
+  --background: rgb(213, 223, 233);
+  --background-searchbar: rgb(238, 243, 247);
   --background-header: rgb(93, 82, 190);
-  --card-background: rgb(233, 233, 233);
+  --background-card: rgb(215, 222, 226);
 
   --icon-primary: black;
   --icon-dim: rgba(0, 0, 0, 0.75);
@@ -171,6 +77,8 @@ export default {
   min-height: 100vh;
 
   background-color: var(--background);
+
+  transition: background-color 0.3s ease-in-out;
 }
 
 .app.dark {
@@ -199,6 +107,8 @@ export default {
   --text-badge: var(--text-primary);
 
   --shadow-dim: rgba(0, 0, 0, 0.1);
+
+  transition: background 0.3s ease-in-out;
 }
 
 body {
@@ -226,7 +136,7 @@ h2 {
   color: var(--text-primary);
 }
 
-a {
+a, li {
   text-decoration: none;
 
   color: var(--text-primary);
@@ -251,6 +161,8 @@ a:hover {
   background: var(--background-header);
   box-shadow: 0px 8px 25px 4px var(--shadow-dim);
 
+  transition: background-color 0.3s ease-in-out;
+
   z-index: 10;
 }
 
@@ -259,6 +171,14 @@ a:hover {
   flex-direction: row;
 
   cursor: pointer;
+}
+
+.header:hover .header-icon{
+  color: var(--icon-hover);
+}
+
+.header:hover .header-text{
+  color: var(--icon-hover);
 }
 
 .header-text {
@@ -274,10 +194,6 @@ a:hover {
   padding-right: 2px;
 
   color: var(--header);
-}
-
-.header-icon:hover {
-  color: var(--icon-hover);
 }
 
 .icon-128 {
@@ -314,41 +230,6 @@ a:hover {
   cursor: pointer;
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  
-  justify-content: center;
-  align-content: center;
-  align-self: center;
-  align-items: center;
-
-  padding-bottom: 2.5rem;
-}
-
-.info-text {
-  margin-top: 15px;
-}
-
-.searchbar {
-  padding: 10px 20px;
-  width: 500px;
-  box-shadow: 0px 4px 8px var(--shadow-primary);
-  
-  border: none;
-  border-radius: 4px;
-
-  text-align: center;
-  font-family: inherit;
-  font-size: 15px;
-
-  margin-bottom: 10px;
-
-  color: var(--text-secondary);
-  background-color: var(--background-searchbar);
-}
-
-
 .footer {
   position: absolute;
   bottom: 0;
@@ -374,55 +255,6 @@ a:hover {
   z-index: 1;
 }
 
-.blur-overlay {
-  filter: blur(20px);
-  pointer-events:none;
 
-  /* Disable selection of anything */
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
-}
-
-.nsfw-warning {
-  position: absolute;
-  z-index: 2;
-
-  display: flex;
-  flex-direction: column;
-
-  text-align: center;
-  align-items: center;
-
-  font-size: 20px;
-}
-
-.anime-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  margin: 0px 400px;
-}
-
-.arrow-right {
-  padding-right: 25px;
-}
-
-.arrow-left {
-  padding-left: 25px
-}
-
-.arrow-left:hover,
-.arrow-right:hover {
-  color: var(--accent-dim);
-
-  cursor: pointer;
-}
 
 </style>
