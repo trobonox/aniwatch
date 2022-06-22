@@ -18,7 +18,7 @@
     <router-view></router-view>
 
     <div class="footer">
-      <a class="footer-text" href="https://github.com/trobonox">© 2021 Trobonox</a>
+      <a class="footer-text" href="https://github.com/trobonox">© 2021-2022 Trobonox</a>
     </div>
     
   </div>
